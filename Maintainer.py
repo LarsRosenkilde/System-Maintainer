@@ -9,6 +9,9 @@ class Maintainer(object):
         self.arch = platform.uname().machine
         self.pyversion = sys.version.split("(")[0]
         self.feedbacks = ["Scanning for updates...", "Downloading updates...", "Installing updates..."]
+        self.cleaner = {"Windows": "cls", 
+                         "Linux": "clear", 
+                         "Darwin": "clear"}
     
     @property
     def system_info(self):
@@ -49,5 +52,8 @@ if __name__ == "__main__":
                          "Linux": DebianMaintain(), 
                          "Darwin": "None"}
     ops = platform.uname().system
+    os.system(Maintainer().cleaner[ops])
     if ops in operating_systems.keys():
         print(operating_systems[ops].system_info)
+    else:
+        print(f"Unsupported Operating System: {ops}")
