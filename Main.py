@@ -1,4 +1,5 @@
 import os
+import sys
 import platform
 
 class Maintainer(object):
@@ -6,6 +7,7 @@ class Maintainer(object):
         self.system = platform.uname().system
         self.version = platform.uname().version
         self.arch = platform.uname().machine
+        self.pyversion = sys.version.split("(")[0]
         self.feedbacks = ["Scanning for updates...", "Downloading updates...", "Installing updates..."]
     
     @property
@@ -13,7 +15,11 @@ class Maintainer(object):
         return str("     [ System Information ]\n"
                   f"Operating System:\t{self.system}\n"
                   f"System Version:\t\t{self.version}\n"
-                  f"Architecture:\t\t{self.arch}")
+                  f"Architecture:\t\t{self.arch}\n"
+                  f"Python Version:\t\t{self.pyversion}")
+    
+    def __str__(self):
+        return str(self.system)
 
 
 class WindowsMaintain(Maintainer):
@@ -27,6 +33,21 @@ class WindowsMaintain(Maintainer):
             os.system(command)
         
 
+class DebianMaintain(Maintainer):
+    def __init__(self, *args, **kwargs):
+        super(DebianMaintain, self).__init__(*args, **kwargs)
+    
+    def updater(self):
+        commands = ["sudo apt update -y", "sudo apt upgrade -y", "sudo apt dist-upgrade -y"]
+        for feed, command in enumerate(commands):
+            print(f"{self.feedbacks[feed]}\n")
+            os.system(command)
 
 
-WindowsMaintain().updater()
+if __name__ == "__main__":
+    operating_systems = {"Windows": WindowsMaintain(), 
+                         "Linux": DebianMaintain(), 
+                         "Darwin": "None"}
+    ops = platform.uname().system
+    if ops in operating_systems.keys():
+        print(operating_systems[ops].system_info)
