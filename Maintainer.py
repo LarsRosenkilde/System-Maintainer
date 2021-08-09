@@ -8,7 +8,8 @@ class Maintainer(object):
         self.version = platform.uname().version
         self.arch = platform.uname().machine
         self.pyversion = sys.version.split("(")[0]
-        self.feedbacks = ["Scanning for updates...", "Downloading updates...", "Installing updates..."]
+        self.update_feedbacks = ["Scanning for updates...", "Downloading updates...", "Installing updates..."]
+        self.clean_feedbacks = ["Cleaning recycle bins globally...", "Cleaning temporary files globally..."]
         self.cleaner = {"Windows": "cls", 
                          "Linux": "clear", 
                          "Darwin": "clear"}
@@ -32,7 +33,13 @@ class WindowsMaintain(Maintainer):
     def updater(self):
         commands = ["UsoClient StartScan", "UsoClient StartDownload", "UsoClient StartInstall"]
         for feed, command in enumerate(commands):
-            print(f"{self.feedbacks[feed]}\n")
+            print(f"{self.update_feedbacks[feed]}\n")
+            os.system(command)
+
+    def cleaner(self):
+        commands = [r"rd /s c:\$Recycle.Bin", r"del /q/f/s %TEMP%\*"]
+        for feed, command in enumerate(commands):
+            print(f"{self.clean_feedbacks[feed]}\n")
             os.system(command)
         
 
@@ -43,7 +50,7 @@ class DebianMaintain(Maintainer):
     def updater(self):
         commands = ["sudo apt update -y", "sudo apt upgrade -y", "sudo apt dist-upgrade -y"]
         for feed, command in enumerate(commands):
-            print(f"{self.feedbacks[feed]}\n")
+            print(f"{self.update_feedbacks[feed]}\n")
             os.system(command)
 
 
